@@ -15,6 +15,7 @@ from .const import (
     EVENT_DISCONNECT,
     EVENT_FRAME,
     EVENT_INIT,
+    EVENT_RAW_H264,
     LOCK_SCREEN_ORIENTATION_UNLOCKED,
 )
 from .control import ControlSender
@@ -89,7 +90,7 @@ class Client:
             device = adb.device(serial=device)
 
         self.device = device
-        self.listeners = dict(frame=[], init=[], disconnect=[])
+        self.listeners = dict(frame=[], init=[], disconnect=[], raw_h264=[])
 
         # User accessible
         self.last_frame: Optional[np.ndarray] = None
@@ -158,9 +159,11 @@ class Client:
             f"max_size={self.max_width}",
             f"max_fps={self.max_fps}",
             f"video_bit_rate={self.bitrate}",
-            f"video_encoder={self.encoder_name}"
-            if self.encoder_name
-            else "video_encoder=OMX.google.h264.encoder",
+            (
+                f"video_encoder={self.encoder_name}"
+                if self.encoder_name
+                else "video_encoder=OMX.google.h264.encoder"
+            ),
             f"video_codec={self.codec_name}" if self.codec_name else "video_codec=h264",
             "tunnel_forward=true",
             "send_frame_meta=false",
@@ -238,14 +241,24 @@ class Client:
                     raise ConnectionError("Video stream is disconnected")
                 packets = codec.parse(raw_h264)
                 for packet in packets:
-                    frames = codec.decode(packet)
-                    for frame in frames:
-                        frame = frame.to_ndarray(format="bgr24")
-                        if self.flip:
-                            frame = frame[:, ::-1, :]
-                        self.last_frame = frame
-                        self.resolution = (frame.shape[1], frame.shape[0])
-                        self.__send_to_listeners(EVENT_FRAME, frame)
+                    if (
+                        EVENT_RAW_H264 in self.listeners
+                        and len(self.listeners[EVENT_RAW_H264]) > 0
+                    ):
+                        raw_packet_bytes = bytes(packet)
+                        self.__send_to_listeners(EVENT_RAW_H264, raw_packet_bytes)
+                    if (
+                        EVENT_FRAME in self.listeners
+                        and len(self.listeners[EVENT_FRAME]) > 0
+                    ):
+                        frames = codec.decode(packet)
+                        for frame in frames:
+                            frame = frame.to_ndarray(format="bgr24")
+                            if self.flip:
+                                frame = frame[:, ::-1, :]
+                            self.last_frame = frame
+                            self.resolution = (frame.shape[1], frame.shape[0])
+                            self.__send_to_listeners(EVENT_FRAME, frame)
             except (BlockingIOError, InvalidDataError):
                 time.sleep(0.01)
                 if not self.block_frame:

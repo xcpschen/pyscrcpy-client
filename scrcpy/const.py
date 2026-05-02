@@ -297,6 +297,7 @@ KEYCODE_KEYCODE_THUMBS_DOWN = 287
 # Event
 EVENT_INIT = "init"
 EVENT_FRAME = "frame"
+EVENT_RAW_H264 = "raw_h264"
 EVENT_DISCONNECT = "disconnect"
 
 # Type
