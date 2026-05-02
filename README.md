@@ -16,9 +16,6 @@ Then, you can start `py-scrcpy` to view the demo:
 
 Note: you can ignore `[ui]` if you don't want to view the demo ui
 
-## Document
-Here is the document GitHub page: [Documentation](https://leng-yue.github.io/py-scrcpy-client/)  
-Also, you can check `scrcpy_ui/main.py` for a full functional demo.
 
 ## Contribution & Development
 Already implemented all functions in scrcpy server 1.20.  
