@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "scrcpy-client"
-version = "0.4.7"
+name = "pyscrcpy-client"
+version = "0.4.8"
 description = "A client of scrcpy"
-authors = ["lengyue <lengyue@lengyue.me>"]
+authors = ["xcpschen"]
 readme = "README.md"
-repository = "https://github.com/leng-yue/py-scrcpy-client"
+repository = "https://github.com/xcpschen/pyscrcpy-client"
 license = "MIT"
 packages = [
     { include = "scrcpy" },
