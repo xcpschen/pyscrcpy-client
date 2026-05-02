@@ -5,8 +5,6 @@ This is a project for python scrcpy client fork from [scrcpy-client](https://git
 1. support callback function for raw h264 stream
 
 
-Note: This gif is compressed and experience lower quality than actual.
-
 ## How to use
 To begin with, you need to install this package via pip:
 ```shell
